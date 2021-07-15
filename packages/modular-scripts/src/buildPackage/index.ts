@@ -15,7 +15,6 @@ import { paramCase as toParamCase } from 'change-case';
 import * as fse from 'fs-extra';
 
 import { getLogger } from './getLogger';
-import { getPackageEntryPoints } from './getPackageEntryPoints';
 import getPackageMetadata from './getPackageMetadata';
 import getModularRoot from '../utils/getModularRoot';
 import { makeBundle } from './makeBundle';
@@ -51,13 +50,7 @@ export async function buildPackage(
   await rimraf(path.join(modularRoot, packagePath, `${outputDirectory}-types`));
 
   // Generate the typings for a package first so that we can do type checking and don't waste time bundling otherwise
-  const { compilingBin } = await getPackageEntryPoints(
-    packagePath,
-    includePrivate,
-  );
-  if (!compilingBin) {
-    await makeTypings(packagePath);
-  }
+  await makeTypings(packagePath);
 
   // generate the js files now that we know we have a valid package
   const didBundle = await makeBundle(

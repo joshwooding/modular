@@ -8,34 +8,20 @@ export async function getPackageEntryPoints(
   includePrivate: boolean,
 ): Promise<{
   main: string;
-  compilingBin: boolean;
 }> {
   const modularRoot = getModularRoot();
   const { packageJsonsByPackagePath } = await getPackageMetadata();
 
   const packageJson = packageJsonsByPackagePath[packagePath];
 
-  let compilingBin = false;
   let main: string | undefined;
 
   if (packageJson.main) {
     main = packageJson.main;
   } else {
-    if (packageJson.bin) {
-      const bins: string[] = Object.values(packageJson.bin) as string[];
-      if (bins.length === 1) {
-        compilingBin = true;
-        main = bins[0];
-      } else {
-        throw new Error(
-          `package.json at ${packagePath} contains multiple "bin" values, bailing...`,
-        );
-      }
-    } else {
-      throw new Error(
-        `package.json at ${packagePath} does not have a "main" or "bin" field, bailing...`,
-      );
-    }
+    throw new Error(
+      `package.json at ${packagePath} does not have a "main" field, bailing...`,
+    );
   }
 
   if (!packageJson) {
@@ -75,5 +61,5 @@ export async function getPackageEntryPoints(
     );
   }
 
-  return { main, compilingBin };
+  return { main };
 }

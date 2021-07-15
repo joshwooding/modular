@@ -1,4 +1,3 @@
-import { JSONSchemaForNPMPackageJsonFiles as PackageJson } from '@schemastore/package';
 import { paramCase as toParamCase } from 'change-case';
 import * as path from 'path';
 import builtinModules from 'builtin-modules';
@@ -42,10 +41,7 @@ export async function makeBundle(
 
   const packageJson = packageJsonsByPackagePath[packagePath];
 
-  const { main, compilingBin } = await getPackageEntryPoints(
-    packagePath,
-    includePrivate,
-  );
+  const { main } = await getPackageEntryPoints(packagePath, includePrivate);
 
   const packageJsonName = packageJson.name as string;
   logger.log(`building ${packageJsonName} at ${packagePath}...`);
@@ -133,6 +129,12 @@ export async function makeBundle(
   // even in a patch, and it'll break your code and you wouldn't know why.
   const missingDependencies: Set<string> = new Set();
 
+  // get all the names of the files we outputted to make sure they're included
+  // in the missing dep check
+  const chunkOrAssetFileNames = new Set<string>(
+    output.map((chunkOfAsset) => chunkOfAsset.fileName),
+  );
+
   for (const chunkOrAsset of output) {
     if (chunkOrAsset.type === 'asset') {
       // TODO: what should happen here?
@@ -194,7 +196,10 @@ export async function makeBundle(
               // let's collect its name and throw an error later
               // TODO: if it's in root's dev dependencies, should throw a
               // different kind of error
-              if (!builtinModules.includes(importedPackage)) {
+              if (
+                !builtinModules.includes(importedPackage) &&
+                !chunkOrAssetFileNames.has(importedPackage)
+              ) {
                 // save filename to remove from missingDeps later
                 // if they exist there
                 localFileNames.add(chunkOrAsset.fileName);
@@ -220,11 +225,10 @@ export async function makeBundle(
   ].filter((dep) => !localFileNames.has(dep));
 
   if (missingDependenciesWithoutLocalFileNames.length > 0) {
-    throw new Error(
-      `Missing dependencies: ${missingDependenciesWithoutLocalFileNames.join(
-        ', ',
-      )};`,
-    );
+    missingDependenciesWithoutLocalFileNames.forEach((missingImport) => {
+      logger.error(`  ${missingImport}`);
+    });
+    throw new Error(`Missing dependencies found.`);
   }
 
   // now actually write the bundles to disk
@@ -248,64 +252,44 @@ export async function makeBundle(
     exports: 'auto',
   });
 
-  if (!compilingBin) {
-    await bundle.write({
-      ...outputOptions,
-      ...(preserveModules
-        ? {
-            preserveModules: true,
-            dir: path.join(modularRoot, packagePath, `${outputDirectory}-es`),
-          }
-        : {
-            file: path.join(
-              modularRoot,
-              packagePath,
-              `${outputDirectory}-es`,
-              toParamCase(packageJsonName) + '.es.js',
-            ),
-          }),
-      format: 'es',
-      exports: 'auto',
-    });
-  }
-
-  let outputFilesPackageJson: Partial<PackageJson>;
-  if (compilingBin && packageJson.bin) {
-    const binName = Object.keys(packageJson.bin)[0];
-    const binPath = main
-      .replace(/\.tsx?$/, '.js')
-      .replace(path.dirname(main) + '/', '');
-
-    outputFilesPackageJson = {
-      bin: {
-        [binName]: binPath,
-      },
-    };
-  } else {
-    outputFilesPackageJson = {
-      // TODO: what of 'bin' fields?
-      main: preserveModules
-        ? path.join(
-            `${outputDirectory}-cjs`,
-            main
-              .replace(/\.tsx?$/, '.js')
-              .replace(path.dirname(main) + '/', ''),
-          )
-        : `${outputDirectory}-cjs/${toParamCase(packageJsonName) + '.cjs.js'}`,
-      module: preserveModules
-        ? path.join(
+  await bundle.write({
+    ...outputOptions,
+    ...(preserveModules
+      ? {
+          preserveModules: true,
+          dir: path.join(modularRoot, packagePath, `${outputDirectory}-es`),
+        }
+      : {
+          file: path.join(
+            modularRoot,
+            packagePath,
             `${outputDirectory}-es`,
-            main
-              .replace(/\.tsx?$/, '.js')
-              .replace(path.dirname(main) + '/', ''),
-          )
-        : `${outputDirectory}-es/${toParamCase(packageJsonName) + '.es.js'}`,
-      typings: path.join(
-        `${outputDirectory}-types`,
-        path.relative('src', main).replace(/\.tsx?$/, '.d.ts'),
-      ),
-    };
-  }
+            toParamCase(packageJsonName) + '.es.js',
+          ),
+        }),
+    format: 'es',
+    exports: 'auto',
+  });
+
+  const outputFilesPackageJson = {
+    // TODO: what of 'bin' fields?
+    main: preserveModules
+      ? path.join(
+          `${outputDirectory}-cjs`,
+          main.replace(/\.tsx?$/, '.js').replace(path.dirname(main) + '/', ''),
+        )
+      : `${outputDirectory}-cjs/${toParamCase(packageJsonName) + '.cjs.js'}`,
+    module: preserveModules
+      ? path.join(
+          `${outputDirectory}-es`,
+          main.replace(/\.tsx?$/, '.js').replace(path.dirname(main) + '/', ''),
+        )
+      : `${outputDirectory}-es/${toParamCase(packageJsonName) + '.es.js'}`,
+    typings: path.join(
+      `${outputDirectory}-types`,
+      path.relative('src', main).replace(/\.tsx?$/, '.d.ts'),
+    ),
+  };
 
   // store the public facing package.json that we'll write to disk later
   publicPackageJsons[packageJsonName] = {
