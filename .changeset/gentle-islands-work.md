@@ -1,5 +1,4 @@
 ---
-'tests-dynamic-imports': patch
 'modular-scripts': patch
 ---
 
