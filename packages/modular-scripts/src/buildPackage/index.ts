@@ -15,7 +15,8 @@ import { paramCase as toParamCase } from 'change-case';
 import * as fse from 'fs-extra';
 
 import { getLogger } from './getLogger';
-import getPackageMetadata from './getPackageMetadata';
+import { getPackageEntryPoints } from './getPackageEntryPoints';
+import getPackageMetadata from '../utils/getPackageMetadata';
 import getModularRoot from '../utils/getModularRoot';
 import { makeBundle } from './makeBundle';
 import { makeTypings } from './makeTypings';

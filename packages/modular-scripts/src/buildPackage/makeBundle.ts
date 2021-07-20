@@ -13,7 +13,7 @@ import resolve from '@rollup/plugin-node-resolve';
 
 import { getLogger } from './getLogger';
 import { getPackageEntryPoints } from './getPackageEntryPoints';
-import getPackageMetadata from './getPackageMetadata';
+import getPackageMetadata from '../utils/getPackageMetadata';
 import getModularRoot from '../utils/getModularRoot';
 
 const outputDirectory = 'dist';
