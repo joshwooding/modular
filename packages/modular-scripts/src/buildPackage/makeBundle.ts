@@ -198,6 +198,11 @@ export async function makeBundle(
               // different kind of error
               if (
                 !builtinModules.includes(importedPackage) &&
+                // In the case that the importedPackage is contained in the
+                // files outputted by the bundle write then the import name
+                // is a dynamic import which generated a file split. This is
+                // perfectly file since we know the file exists from the bundle
+                // write phase.
                 !chunkOrAssetFileNames.has(importedPackage)
               ) {
                 // save filename to remove from missingDeps later
