@@ -2,4 +2,4 @@
 'modular-scripts': patch
 ---
 
-Bump rollup from 2.52.8 to 2.53.1
+Bump postcss from 8.3.5 to 8.3.6

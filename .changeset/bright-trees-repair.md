@@ -2,4 +2,4 @@
 'modular-scripts': patch
 ---
 
-Bump filesize from 6.1.0 to 7.0.0
+Bump rollup from 2.53.2 to 2.53.3

@@ -15,6 +15,7 @@ import { getLogger } from './getLogger';
 import { getPackageEntryPoints } from './getPackageEntryPoints';
 import getPackageMetadata from '../utils/getPackageMetadata';
 import getModularRoot from '../utils/getModularRoot';
+import { ModularPackageJson } from '../utils/isModularType';
 
 const outputDirectory = 'dist';
 const extensions = ['.ts', '.tsx', '.js', '.jsx'];
@@ -27,7 +28,7 @@ export async function makeBundle(
   packagePath: string,
   preserveModules: boolean,
   includePrivate: boolean,
-): Promise<boolean> {
+): Promise<ModularPackageJson> {
   const modularRoot = getModularRoot();
   const metadata = await getPackageMetadata();
   const {
@@ -35,7 +36,6 @@ export async function makeBundle(
     packageJsons,
     packageJsonsByPackagePath,
     packageNames,
-    publicPackageJsons,
   } = metadata;
   const logger = getLogger(packagePath);
 
@@ -296,8 +296,10 @@ export async function makeBundle(
     ),
   };
 
-  // store the public facing package.json that we'll write to disk later
-  publicPackageJsons[packageJsonName] = {
+  logger.log(`built ${packageJsonName} at ${packagePath}`);
+
+  // return the public facing package.json that we'll write to disk later
+  return {
     ...packageJson,
     ...outputFilesPackageJson,
     dependencies: {
@@ -312,7 +314,4 @@ export async function makeBundle(
       'README.md',
     ]),
   };
-
-  logger.log(`built ${packageJsonName} at ${packagePath}`);
-  return true;
 }
