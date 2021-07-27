@@ -10,9 +10,10 @@ import {
   getQueriesForElement,
   queries,
 } from 'pptr-testing-library';
+import puppeteer from 'puppeteer';
+
 import getModularRoot from '../utils/getModularRoot';
 import { startApp, DevServer } from './start-app';
-import puppeteer from 'puppeteer';
 import { ModularPackageJson } from '../utils/isModularType';
 
 const rimraf = promisify(_rimraf);
@@ -23,7 +24,6 @@ const modularRoot = getModularRoot();
 const { getNodeText } = queries;
 
 // These tests must be executed sequentially with `--runInBand`.
-jest.setTimeout(10 * 60 * 1000);
 
 const packagesPath = path.join(getModularRoot(), 'packages');
 
@@ -214,10 +214,10 @@ describe('modular-scripts', () => {
             "react": "^17.0.2",
           },
           "files": Array [
-            "/dist-cjs",
-            "/dist-es",
-            "/dist-types",
             "README.md",
+            "dist-cjs",
+            "dist-es",
+            "dist-types",
           ],
           "license": "UNLICENSED",
           "main": "dist-cjs/index.js",
@@ -301,13 +301,13 @@ describe('modular-scripts', () => {
     const cleanedOutput = output.all?.replace(/|\[\d+./gm, '');
 
     expect(cleanedOutput).toContain(
-      'PASS packages/sample-view/src/__tests__/index.test.tsx',
+      'PASS test packages/sample-view/src/__tests__/index.test.tsx',
     );
     expect(cleanedOutput).toContain(
-      'PASS packages/sample-package/src/__tests__/index.test.ts',
+      'PASS test packages/sample-package/src/__tests__/index.test.ts',
     );
     expect(cleanedOutput).toContain(
-      'PASS packages/nested/sample-nested-package/src/__tests__/index.test.ts',
+      'PASS test packages/nested/sample-nested-package/src/__tests__/index.test.ts',
     );
   });
 
@@ -328,10 +328,10 @@ describe('modular-scripts', () => {
         Object {
           "dependencies": Object {},
           "files": Array [
-            "/dist-cjs",
-            "/dist-es",
-            "/dist-types",
             "README.md",
+            "dist-cjs",
+            "dist-es",
+            "dist-types",
           ],
           "license": "UNLICENSED",
           "main": "dist-cjs/index.js",
@@ -398,10 +398,10 @@ describe('modular-scripts', () => {
         Object {
           "dependencies": Object {},
           "files": Array [
-            "/dist-cjs",
-            "/dist-es",
-            "/dist-types",
             "README.md",
+            "dist-cjs",
+            "dist-es",
+            "dist-types",
           ],
           "license": "UNLICENSED",
           "main": "dist-cjs/nested-sample-package.cjs.js",

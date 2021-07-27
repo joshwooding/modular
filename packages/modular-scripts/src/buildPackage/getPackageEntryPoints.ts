@@ -33,31 +33,25 @@ export async function getPackageEntryPoints(
 
   if (!fse.existsSync(path.join(modularRoot, packagePath, main))) {
     throw new Error(
-      `package.json at ${packagePath} does not have a main file that points to an existing source file, bailing...`,
+      `package.json does not have a main file that points to an existing source file, bailing...`,
     );
   }
 
   if (!packageJson.name) {
-    throw new Error(
-      `package.json at ${packagePath} does not have a valid "name", bailing...`,
-    );
+    throw new Error(`package.json does not have a valid "name", bailing...`);
   }
 
   if (!packageJson.version) {
-    throw new Error(
-      `package.json at ${packagePath} does not have a valid "version", bailing...`,
-    );
+    throw new Error(`package.json does not have a valid "version", bailing...`);
   }
 
   if (packageJson.module) {
-    throw new Error(
-      `package.json at ${packagePath} shouldn't have a "module" field, bailing...`,
-    );
+    throw new Error(`package.json shouldn't have a "module" field, bailing...`);
   }
 
   if (packageJson.typings) {
     throw new Error(
-      `package.json at ${packagePath} shouldn't have a "typings" field, bailing...`,
+      `package.json shouldn't have a "typings" field, bailing...`,
     );
   }
 

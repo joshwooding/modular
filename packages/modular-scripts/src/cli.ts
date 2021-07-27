@@ -1,15 +1,18 @@
 #!/usr/bin/env node
 
+import { ExecaError } from 'execa';
 import * as fs from 'fs-extra';
-import * as isCi from 'is-ci';
+import * as isCI from 'is-ci';
 import chalk from 'chalk';
 import commander from 'commander';
 import { JSONSchemaForNPMPackageJsonFiles as PackageJson } from '@schemastore/package';
 import type { TestOptions } from './test';
+import type { LintOptions } from './lint';
 
 import startupCheck from './utils/startupCheck';
 import actionPreflightCheck from './utils/actionPreflightCheck';
 import * as logger from './utils/logger';
+import getModularRoot from './utils/getModularRoot';
 
 // Makes the script crash on unhandled rejections instead of silently
 // ignoring them. In the future, promise rejections that are not handled will
@@ -41,6 +44,7 @@ program
     'Equivalent of --prefer-offline for yarn installations',
     true,
   )
+  .option('--verbose', 'Run yarn commands with --verbose set')
   .action(
     async (
       packageName: string,
@@ -48,6 +52,7 @@ program
         unstableType?: string;
         unstableName?: string;
         preferOffline?: boolean;
+        verbose?: boolean;
       },
     ) => {
       const { default: addPackage } = await import('./addPackage');
@@ -56,6 +61,7 @@ program
         addOptions.unstableType,
         addOptions.unstableName,
         addOptions.preferOffline,
+        addOptions.verbose,
       );
     },
   );
@@ -79,6 +85,13 @@ program
         private: boolean;
       },
     ) => {
+      const modularRoot = getModularRoot();
+      if (process.cwd() !== modularRoot) {
+        throw new Error(
+          'This command can only be run from the root of a modular project',
+        );
+      }
+
       const { default: build } = await import('./build');
       logger.log('building packages at:', packagePaths.join(', '));
 
@@ -137,8 +150,8 @@ program
   .option('--updateSnapshot, -u', testOptions.updateSnapshot.description)
   .option('--verbose', testOptions.verbose.description)
   .option('--watch', testOptions.watch.description)
-  .option('--watchAll [value]', testOptions.watchAll.description, !isCi)
-  .option('--bail [value]', testOptions.bail.description, isCi)
+  .option('--watchAll [value]', testOptions.watchAll.description, !isCI)
+  .option('--bail [value]', testOptions.bail.description, isCI)
   .option('--clearCache', testOptions.clearCache.description)
   .option('--logHeapUsage', testOptions.logHeapUsage.description)
   .option('--no-cache', testOptions.cache.description)
@@ -180,6 +193,7 @@ program
 interface InitOptions {
   y: boolean;
   preferOffline: string;
+  verbose: boolean;
 }
 
 program
@@ -187,9 +201,14 @@ program
   .description('Initialize a new modular root in the current folder')
   .option('-y', 'equivalent to the -y flag in NPM')
   .option('--prefer-offline [value]', 'delegate to offline cache first', true)
+  .option('--verbose', 'Run yarn commands with --verbose set')
   .action(async (options: InitOptions) => {
     const { default: initWorkspace } = await import('./init');
-    await initWorkspace(options.y, JSON.parse(options.preferOffline));
+    await initWorkspace(
+      options.y,
+      JSON.parse(options.preferOffline),
+      options.verbose,
+    );
   });
 
 program
@@ -227,10 +246,23 @@ program
   });
 
 program
+  .command('lint [regexes...]')
+  .option(
+    '--all',
+    'Only lint diffed files from your remote origin default branch (e.g. main or master)',
+  )
+  .option('--fix', 'Fix the lint errors wherever possible')
+  .description('Lints the codebase')
+  .action(async (regexes: string[], options: LintOptions) => {
+    const { default: lint } = await import('./lint');
+    await lint(options, regexes);
+  });
+
+program
   .command('typecheck')
   .description('Typechecks the entire project')
   .action(async () => {
-    const { typecheck } = await import('./typecheck');
+    const { default: typecheck } = await import('./typecheck');
     await typecheck();
   });
 
@@ -238,7 +270,10 @@ void startupCheck()
   .then(() => {
     return program.parseAsync(process.argv);
   })
-  .catch((err: Error) => {
+  .catch((err: Error & ExecaError) => {
     logger.error(err.message);
-    process.exit(1);
+    if (err.stack) {
+      logger.debug(err.stack);
+    }
+    process.exit(err.exitCode || process.exitCode || 1);
   });
