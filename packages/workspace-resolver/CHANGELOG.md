@@ -1,5 +1,14 @@
 # @modular-scripts/workspace-resolver
 
+## 1.1.1
+
+### Patch Changes
+
+- [#2146](https://github.com/jpmorganchase/modular/pull/2146)
+  [`db7acd0`](https://github.com/jpmorganchase/modular/commit/db7acd0d2fa0b896f99a0e7f4c745c8e0b790325)
+  Thanks [@sgb-io](https://github.com/sgb-io)! - Remove requirement to build the
+  package in local dev
+
 ## 1.1.0
 
 ### Minor Changes
