@@ -1,5 +1,51 @@
 # modular-scripts
 
+## 3.4.0
+
+### Minor Changes
+
+- [#2145](https://github.com/jpmorganchase/modular/pull/2145)
+  [`a17e9df`](https://github.com/jpmorganchase/modular/commit/a17e9dfae3dcf7d94c415278b4a87892de1c3854)
+  Thanks [@cristiano-belloni](https://github.com/cristiano-belloni)! - Selective
+  test on workspace name with the --package option
+
+* [#2111](https://github.com/jpmorganchase/modular/pull/2111)
+  [`deaee2c`](https://github.com/jpmorganchase/modular/commit/deaee2cf0c6cd74200236d886f6baadee089196e)
+  Thanks [@cristiano-belloni](https://github.com/cristiano-belloni)! - Improve
+  the way modular add creates new workspaces, add the custom `--path` option,
+  factor out addPackage tests
+
+### Patch Changes
+
+- [#2135](https://github.com/jpmorganchase/modular/pull/2135)
+  [`305cff2`](https://github.com/jpmorganchase/modular/commit/305cff287a4eaa812ed92cf810b15d8198230a8f)
+  Thanks [@dependabot](https://github.com/apps/dependabot)! - Bump semver-regex
+  from 3.1.3 to 3.1.4
+
+* [#2087](https://github.com/jpmorganchase/modular/pull/2087)
+  [`8c8570a`](https://github.com/jpmorganchase/modular/commit/8c8570a33d320a5e4bfb3f615b81a0509050dc50)
+  Thanks [@dependabot](https://github.com/apps/dependabot)! - Bump dotenv from
+  16.0.1 to 16.0.2
+
+- [#2156](https://github.com/jpmorganchase/modular/pull/2156)
+  [`432392b`](https://github.com/jpmorganchase/modular/commit/432392bfcfd4a6f482429329c1dc1cc0535ddcf6)
+  Thanks [@dependabot](https://github.com/apps/dependabot)! - Bump address from
+  1.2.0 to 1.2.1
+
+* [#2137](https://github.com/jpmorganchase/modular/pull/2137)
+  [`33ffaf8`](https://github.com/jpmorganchase/modular/commit/33ffaf8946264faab10e3ab3e5467f984cd2690e)
+  Thanks [@dependabot](https://github.com/apps/dependabot)! - Bump strip-ansi
+  from 6.0.0 to 6.0.1
+
+- [#1950](https://github.com/jpmorganchase/modular/pull/1950)
+  [`e41effa`](https://github.com/jpmorganchase/modular/commit/e41effa5a6ff62929688acc37bc948199ad0aa7f)
+  Thanks [@dependabot](https://github.com/apps/dependabot)! - Bump ws from 8.8.0
+  to 8.8.1
+
+- Updated dependencies
+  [[`db7acd0`](https://github.com/jpmorganchase/modular/commit/db7acd0d2fa0b896f99a0e7f4c745c8e0b790325)]:
+  - @modular-scripts/workspace-resolver@1.1.1
+
 ## 3.3.2
 
 ### Patch Changes
