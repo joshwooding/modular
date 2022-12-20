@@ -1,5 +1,37 @@
 # modular-scripts
 
+## 3.7.0
+
+### Minor Changes
+
+- [#2228](https://github.com/jpmorganchase/modular/pull/2228)
+  [`5322a71`](https://github.com/jpmorganchase/modular/commit/5322a718e8bf6589b9bcb0b33889e0a024e2b04d)
+  Thanks [@cristiano-belloni](https://github.com/cristiano-belloni)! - modular
+  `source` type + `--dangerouslyIgnoreCircularDependencies` build option
+
+* [#2050](https://github.com/jpmorganchase/modular/pull/2050)
+  [`2241c2b`](https://github.com/jpmorganchase/modular/commit/2241c2b2c900e21fd1cc29f1d3e6d75c6f6ec372)
+  Thanks [@joshwooding](https://github.com/joshwooding)! - - Fix prefixed logger
+  debug method logging as info
+  - Copy LICENSE files when building packages
+
+### Patch Changes
+
+- [#2218](https://github.com/jpmorganchase/modular/pull/2218)
+  [`15a417c`](https://github.com/jpmorganchase/modular/commit/15a417c3c555f5d8712436e585b94334c8b94060)
+  Thanks [@joshwooding](https://github.com/joshwooding)! - Fix repository field
+  generation on Windows
+
+* [#2050](https://github.com/jpmorganchase/modular/pull/2050)
+  [`2241c2b`](https://github.com/jpmorganchase/modular/commit/2241c2b2c900e21fd1cc29f1d3e6d75c6f6ec372)
+  Thanks [@joshwooding](https://github.com/joshwooding)! - Remove explicit
+  package.json and license entry in files array
+
+- [#2219](https://github.com/jpmorganchase/modular/pull/2219)
+  [`4a541a9`](https://github.com/jpmorganchase/modular/commit/4a541a904ebff5d4a56a16a3bbb6c57669c17fac)
+  Thanks [@cristiano-belloni](https://github.com/cristiano-belloni)! - Fix
+  `modular build` crashing when the selected workspace(s) are not in `packages`.
+
 ## 3.6.0
 
 ### Minor Changes
